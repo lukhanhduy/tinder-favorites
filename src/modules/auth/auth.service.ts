@@ -18,16 +18,9 @@ export class AuthService {
     ) { }
 
     async create(userDto: AuthRegisterDto) {
-        const slug = slugify(userDto.name, {
-            lower: true,
-        });
         const finduser = await this.userModel.findOne({
             email: userDto.email
         });
-        const existSlug = this.userModel.findOne({
-            slug: slug,
-        })
-        userDto.slug = !existSlug ? slug : slug + '-' + new Date().getTime();
         if (finduser) throw new Error('user email exist in system');
 
         try {
@@ -51,16 +44,10 @@ export class AuthService {
 
     async update(userId: string, userDto: AuthUpdateDto) {
         try {
-            const slug = slugify(userDto.name, {
-                lower: true,
-            });
-
             await this.userModel.findByIdAndUpdate(userId, userDto as any);
             const existSlug = this.userModel.findOne({
-                slug: slug,
                 _id: { $ne: userId }
             })
-            userDto.slug = !existSlug ? slug : slug + '-' + new Date().getTime();
             return await this.userModel.findOne({
                 email: userDto.email
             }).populate({
