@@ -22,8 +22,8 @@ export class FavoritesService {
     }
 
     update(favoriteDto: FavoriteDto) {
-        return this.favoriteModel.find({
-            user_id: favoriteDto,
+        return this.favoriteModel.findOneAndUpdate({
+            user_id: favoriteDto.user_id,
             owner_id: favoriteDto.owner_id,
         }, favoriteDto, { new: true, upsert: true });
     }

@@ -27,6 +27,7 @@ export class UserService {
     }
 
     async like(userId: string) {
+        if( userId ==  this.requestContext.user.id ) throw new Error('Request failed')
         const [user, findFavorite] = await Promise.all([
             this.userModel.findById(userId),
             this.favoriteService.find({
@@ -35,7 +36,7 @@ export class UserService {
             })
         ]);
         if (!user) throw new Error('User dont exist in system');
-        if (!findFavorite && findFavorite.status == FavoriteStatus.LIKE) throw new Error('Favorite exist in system');
+        if ((findFavorite && findFavorite.status) == FavoriteStatus.LIKE) throw new Error('Favorite exist in system');
         return this.favoriteService.create({
             owner_id: this.requestContext.user.id,
             user_id: userId,
@@ -43,6 +44,8 @@ export class UserService {
     }
 
     async passed(userId: string) {
+        if( userId ==  this.requestContext.user.id ) throw new Error('Request failed')
+
         const [user] = await Promise.all([
             this.userModel.findById(userId)
         ]);
